@@ -20,8 +20,14 @@ RUN a2enmod cgi cgid
 RUN echo '\
 <VirtualHost *:80>\n\
     ServerAdmin webmaster@localhost\n\
-    DocumentRoot /var/www/html/non-cgi\n\
+    DocumentRoot /var/www/html\n\
     ScriptAlias /cgi-bin/ /var/www/html/cgi-bin/\n\
+    \n\
+    <Directory "/var/www/html">\n\
+        Options FollowSymLinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
     \n\
     <Directory "/var/www/html/non-cgi">\n\
         Options FollowSymLinks\n\
