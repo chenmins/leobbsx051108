@@ -49,10 +49,12 @@ for (my $i = $start; $i <= $end; $i++) {
     
     next unless ($topicid && $topicid =~ /^[0-9]+$/);
     
-    # Clean title
-    $topictitle =~ s/^[^>]*>// if $topictitle; # remove prefix like "无标题主题"
-    $topictitle =~ s/^\x{65E0}\x{6807}\x{9898}\x{4E3B}\x{9898}//; # remove utf8 prefix
-    $topictitle =~ s/^����������//; # remove GB prefix
+    # Clean title - remove the "无标题主题" prefix (GB2312 encoded)
+    if ($topictitle) {
+        $topictitle =~ s/^[^>]*>// if ($topictitle =~ /^[^>]*>/);
+        # Remove common LeoBBS topic prefix pattern
+        $topictitle =~ s/^\xce\xde\xb1\xea\xcc\xe2\xd6\xf7\xcc\xe2//; # GB2312: 无标题主题
+    }
     
     # Thread state interpretation
     my $is_locked = ($threadstate =~ /lock/i) ? 'true' : 'false';

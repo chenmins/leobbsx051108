@@ -15,8 +15,8 @@ if ($search_query eq '') {
 $per_page = 50 if ($per_page > 50);
 $per_page = 5 if ($per_page < 5);
 
-# Sanitize search query
-$search_query =~ s/[\a\b\f\n\e\0\r\t\`\~\!\@\#\$\%\^\&\*\(\)\+\=\\\{\}\;\'\:\"\.\/\<\>\?]//isg;
+# Sanitize search query - remove control characters and special chars
+$search_query =~ s/[\a\f\n\e\0\r\t\`\~\!\@\#\$\%\^\&\*\(\)\+\=\\\{\}\;\'\:\"\.\/\<\>\?]//isg;
 
 # Read all forums list to get forum IDs
 my $allforums_file = "${main::lbdir}data/allforums.cgi";
@@ -69,7 +69,8 @@ foreach my $fid (@forum_ids) {
         $match = 1 if ($startedby =~ /\Q$search_query\E/i);
         
         if ($match) {
-            $topictitle =~ s/^����������//;
+            # Remove common LeoBBS topic prefix pattern (GB2312: 无标题主题)
+            $topictitle =~ s/^\xce\xde\xb1\xea\xcc\xe2\xd6\xf7\xcc\xe2//;
             
             my $item = "{";
             $item .= "\"id\":$topicid,";

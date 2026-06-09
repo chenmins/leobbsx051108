@@ -65,15 +65,22 @@ if ($auth_action eq 'login') {
         json_error(401, "Invalid password");
     }
     
-    # Generate a simple token (username:password_hash base64 encoded)
+    # Generate a token with expiration (username:timestamp:hmac)
+    my $token_time = time();
+    my $token_expires = $token_time + 86400 * 7; # 7 days expiration
+    my $token_payload = "${username}:${token_time}:${token_expires}";
+    my $token_hmac = '';
+    eval {
+        use Digest::MD5 qw(md5_hex);
+        $token_hmac = md5_hex("${token_payload}:${hashed_password}");
+    };
     my $token = '';
     eval {
         require MIME::Base64;
-        $token = MIME::Base64::encode_base64("${username}:${hashed_password}", '');
+        $token = MIME::Base64::encode_base64("${token_payload}:${token_hmac}", '');
     };
     if ($@ || $token eq '') {
-        # Fallback: just concatenate
-        $token = "${username}:${hashed_password}";
+        $token = "${token_payload}:${token_hmac}";
     }
     
     my $result = "{";
@@ -93,13 +100,35 @@ if ($auth_action eq 'login') {
     json_success($result);
 }
 elsif ($auth_action eq 'verify') {
-    my ($username, $passhash) = api_authenticate();
+    my $token = $ENV{'HTTP_X_API_TOKEN'} || $query->param('token') || '';
     
-    if ($username eq '') {
-        json_error(401, "No token provided or invalid token");
+    if ($token eq '') {
+        json_error(401, "No token provided");
     }
     
-    # Verify user
+    # Decode token
+    my $decoded = '';
+    eval {
+        require MIME::Base64;
+        $decoded = MIME::Base64::decode_base64($token);
+    };
+    if ($@ || $decoded eq '') {
+        $decoded = $token;
+    }
+    
+    # Token format: username:timestamp:expires:hmac
+    my ($username, $token_time, $token_expires, $token_hmac) = split(/:/, $decoded, 4);
+    
+    if (!$username || !$token_time || !$token_expires || !$token_hmac) {
+        json_error(401, "Invalid token format");
+    }
+    
+    # Check expiration
+    if (time() > $token_expires) {
+        json_error(401, "Token expired");
+    }
+    
+    # Verify user exists and HMAC is valid
     my $nametocheck = $username;
     $nametocheck =~ s/ /\_/g;
     $nametocheck =~ tr/A-Z/a-z/;
@@ -120,11 +149,18 @@ elsif ($auth_action eq 'verify') {
     
     my ($membername, $stored_password) = split(/\t/, $filedata);
     
-    if ($passhash ne $stored_password) {
-        json_error(401, "Token expired or invalid");
+    # Verify HMAC
+    my $expected_hmac = '';
+    eval {
+        use Digest::MD5 qw(md5_hex);
+        $expected_hmac = md5_hex("${username}:${token_time}:${token_expires}:${stored_password}");
+    };
+    
+    if ($token_hmac ne $expected_hmac) {
+        json_error(401, "Token invalid or password changed");
     }
     
-    json_success('{"valid":true,"username":' . json_str($membername) . '}');
+    json_success('{"valid":true,"username":' . json_str($membername) . ',"expires":' . $token_expires . '}');
 }
 else {
     json_error(400, "Unknown auth action: $auth_action");

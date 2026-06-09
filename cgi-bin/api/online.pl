@@ -20,7 +20,8 @@ if (-e $online_file) {
         my ($user, $location, $type, $desc, $timestamp, $ip) = split(/\t/, $line);
         next unless $user;
         
-        if ($user eq '' || $user =~ /^(����|guest)/i) {
+        if ($user eq '' || $user =~ /^(\xd3\xce\xbf\xcd|guest)/i) {
+            # \xd3\xce\xbf\xcd is GB2312 for "游客" (guest)
             $total_guests++;
         } else {
             $total_members++;
