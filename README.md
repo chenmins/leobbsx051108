@@ -93,27 +93,20 @@ docker exec -it leobbs-forum bash
 
 ### 恢复
 
+使用项目自带的恢复脚本：
+
 ```bash
-# 停止服务
-docker compose down
-
-# 解压备份文件到临时目录
-mkdir -p /tmp/leobbs_restore
-tar -xzf backups/leobbs_backup_XXXXXXXX_XXXXXX.tar.gz -C /tmp/leobbs_restore
-
-# 恢复各 Volume 数据
-docker run --rm -v leobbs_data:/data -v /tmp/leobbs_restore/data:/backup alpine sh -c "rm -rf /data/* && cp -a /backup/. /data/"
-docker run --rm -v leobbs_members:/data -v /tmp/leobbs_restore/members:/backup alpine sh -c "rm -rf /data/* && cp -a /backup/. /data/"
-docker run --rm -v leobbs_messages:/data -v /tmp/leobbs_restore/messages:/backup alpine sh -c "rm -rf /data/* && cp -a /backup/. /data/"
-docker run --rm -v leobbs_boarddata:/data -v /tmp/leobbs_restore/boarddata:/backup alpine sh -c "rm -rf /data/* && cp -a /backup/. /data/"
-docker run --rm -v leobbs_usr:/data -v /tmp/leobbs_restore/usr:/backup alpine sh -c "rm -rf /data/* && cp -a /backup/. /data/"
-
-# 重新启动
-docker compose up -d
-
-# 清理临时文件
-rm -rf /tmp/leobbs_restore
+# 从备份文件恢复（需要容器正在运行）
+./restore.sh ./backups/leobbs_backup_XXXXXXXX_XXXXXX.tar.gz
 ```
+
+脚本会自动：
+1. 将备份文件上传到容器内
+2. 解压覆盖论坛数据
+3. 修复文件权限
+4. 清理临时文件
+
+> **注意**：恢复操作会覆盖当前所有论坛数据，执行前请确认。
 
 ---
 
@@ -124,8 +117,9 @@ leobbsx051108/
 ├── Dockerfile              # Docker 镜像构建文件
 ├── docker-compose.yml      # Docker Compose 编排文件
 ├── backup.sh               # 数据备份脚本
+├── restore.sh              # 数据恢复脚本
 ├── cgi-bin/                # CGI 程序目录（Perl 脚本）
-│   ├── index.cgi           # 论坛首页
+│   ├── leobbs.cgi          # 论坛首页
 │   ├── install.cgi         # 安装程序
 │   ├── admin.cgi           # 管理后台
 │   ├── data/               # 论坛配置
