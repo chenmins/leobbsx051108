@@ -24,7 +24,7 @@ RUN echo '\
     ScriptAlias /cgi-bin/ /var/www/html/cgi-bin/\n\
     \n\
     <Directory "/var/www/html/non-cgi">\n\
-        Options Indexes FollowSymLinks\n\
+        Options FollowSymLinks\n\
         AllowOverride All\n\
         Require all granted\n\
     </Directory>\n\
@@ -48,22 +48,22 @@ COPY non-cgi /var/www/html/non-cgi
 RUN chmod -R 755 /var/www/html/cgi-bin/ && \
     find /var/www/html/cgi-bin -name "*.cgi" -exec chmod 755 {} \; && \
     find /var/www/html/cgi-bin -name "*.pl" -exec chmod 755 {} \; && \
-    chmod -R 777 /var/www/html/cgi-bin/data && \
-    chmod -R 777 /var/www/html/cgi-bin/members && \
-    chmod -R 777 /var/www/html/cgi-bin/messages && \
-    chmod -R 777 /var/www/html/cgi-bin/boarddata && \
-    chmod -R 777 /var/www/html/cgi-bin/record && \
-    chmod -R 777 /var/www/html/cgi-bin/search && \
-    chmod -R 777 /var/www/html/cgi-bin/cache && \
-    chmod -R 777 /var/www/html/cgi-bin/lock && \
-    chmod -R 777 /var/www/html/cgi-bin/ftpdata && \
-    chmod -R 777 /var/www/html/cgi-bin/memblock && \
-    chmod -R 777 /var/www/html/cgi-bin/memfav && \
-    chmod -R 777 /var/www/html/cgi-bin/memfriend && \
-    chmod -R 777 /var/www/html/cgi-bin/sale && \
-    chmod -R 777 /var/www/html/cgi-bin/ebankdata && \
-    chmod -R 777 /var/www/html/non-cgi/usr && \
-    chmod -R 777 /var/www/html/non-cgi/usravatars && \
+    chmod -R 770 /var/www/html/cgi-bin/data && \
+    chmod -R 770 /var/www/html/cgi-bin/members && \
+    chmod -R 770 /var/www/html/cgi-bin/messages && \
+    chmod -R 770 /var/www/html/cgi-bin/boarddata && \
+    chmod -R 770 /var/www/html/cgi-bin/record && \
+    chmod -R 770 /var/www/html/cgi-bin/search && \
+    chmod -R 770 /var/www/html/cgi-bin/cache && \
+    chmod -R 770 /var/www/html/cgi-bin/lock && \
+    chmod -R 770 /var/www/html/cgi-bin/ftpdata && \
+    chmod -R 770 /var/www/html/cgi-bin/memblock && \
+    chmod -R 770 /var/www/html/cgi-bin/memfav && \
+    chmod -R 770 /var/www/html/cgi-bin/memfriend && \
+    chmod -R 770 /var/www/html/cgi-bin/sale && \
+    chmod -R 770 /var/www/html/cgi-bin/ebankdata && \
+    chmod -R 775 /var/www/html/non-cgi/usr && \
+    chmod -R 775 /var/www/html/non-cgi/usravatars && \
     chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
