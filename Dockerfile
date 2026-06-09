@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     libio-compress-perl \
     libdigest-md5-perl \
     libmime-base64-perl \
-    libnet-smtp-perl \
+    libnet-perl \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable Apache CGI module
