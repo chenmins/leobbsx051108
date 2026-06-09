@@ -29,7 +29,7 @@ docker compose up -d --build
 启动成功后，打开浏览器访问：
 
 - **安装向导**：`http://localhost:8080/cgi-bin/install.cgi`
-- **论坛首页**：`http://localhost:8080/cgi-bin/index.cgi`（安装完成后）
+- **论坛首页**：`http://localhost:8080/cgi-bin/leobbs.cgi`（安装完成后）
 
 ### 安装步骤
 
