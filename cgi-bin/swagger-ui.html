@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeoBBS X REST API - Swagger UI</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css">
+    <style>
+        html { box-sizing: border-box; overflow-y: scroll; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body { margin: 0; background: #fafafa; }
+        .topbar { display: none; }
+        .swagger-ui .info { margin: 20px 0; }
+        .swagger-ui .info .title { font-size: 2em; }
+        .api-header {
+            background: linear-gradient(135deg, #4D76B3 0%, #73A2DE 100%);
+            color: white;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .api-header h1 { margin: 0; font-size: 1.8em; }
+        .api-header p { margin: 8px 0 0; opacity: 0.9; }
+        .api-header a { color: #fff; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="api-header">
+        <h1>🦁 LeoBBS X REST API</h1>
+        <p>Forum REST API documentation and testing interface | <a href="api.cgi">API Root</a></p>
+    </div>
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            // Determine the base URL for the API spec
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            
+            const ui = SwaggerUIBundle({
+                url: basePath + "api-docs.json",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                defaultModelsExpandDepth: 2,
+                defaultModelExpandDepth: 2,
+                docExpansion: "list",
+                filter: true,
+                showExtensions: true,
+                showCommonExtensions: true,
+                tryItOutEnabled: true
+            });
+            window.ui = ui;
+        };
+    </script>
+</body>
+</html>
